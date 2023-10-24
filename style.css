@@ -1,0 +1,41 @@
+label {
+    font-weight: bolder;
+}
+::placeholder {
+    color: black !important;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:  black !important;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:  black !important;
+ }
+ h1 {
+     text-align: center;
+     color: white;
+     font-family: 'Open Sans', sans-serif;
+     font-weight: bold;
+     margin-top: 20px;
+ }
+ #msg {
+     height: 60px;
+ }
+ #grid-contatos tbody {
+     cursor: pointer;
+ }
+
+ body {
+    background-color: orange;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+}
+ 
+
+h2 {
+    color: white;
+    margin-top: 20px;
+}
+
+.form {
+    margin-top: -40px;
+}
