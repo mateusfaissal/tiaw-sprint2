@@ -86,3 +86,176 @@ function deleteContato(id, refreshFunction) {
             displayMessage("Erro ao remover operação");
         });
 }
+
+function sortOperationsByValue() {
+    readContato(dados => {
+        let sortedData = dados.sort((a, b) => parseFloat(a.valor) - parseFloat(b.valor));
+        exibeContatos(sortedData); // Passa os dados ordenados para a função de exibição
+    });
+}
+// Função para filtrar operações por categoria
+function filterOperationsByCategory() {
+    let category = document.getElementById('filterCategoria').value;
+    readContato(dados => {
+        let filteredData = dados.filter(contato => contato.tipo.toLowerCase().includes(category.toLowerCase()));
+        exibeContatos(filteredData); // Passa os dados filtrados para a função de exibição
+    });
+}
+
+function showAllOperations() {
+    exibeContatos(); 
+}
+
+function populaTabela(dados) {
+    let tableContatos = document.getElementById("table-contatos");
+    tableContatos.innerHTML = ""; // Limpa a tabela
+
+    // Popula a tabela com os dados passados para a função
+    dados.forEach(contato => {
+        tableContatos.innerHTML += `<tr>
+            <td scope="row">${contato.id}</td>
+            <td>${contato.valor}</td>
+            <td>${contato.descrição}</td>
+            <td>${contato.categoria}</td>
+            <td>${contato.tipo}</td>
+        </tr>`;
+    });
+}
+
+function exibeContatos(dados = null) {
+    let tableContatos = document.getElementById("table-contatos");
+
+    // Se nenhum dado for passado para a função, busca os dados
+    if (!dados) {
+        readContato(data => {
+            populaTabela(data);
+        });
+    } else {
+        // Se dados forem passados, apenas popula a tabela com eles
+        populaTabela(dados);
+    }
+}
+
+function init() {
+    // Define uma variável para o formulário de contato
+    formContato = document.getElementById("form-contato");
+
+    // Adiciona funções para tratar os eventos 
+    btnInsert = document.getElementById("btnInsert");
+    btnInsert.addEventListener('click', function () {
+        // Verifica se o formulário está preenchido corretamente
+        if (!formContato.checkValidity()) {
+            displayMessage("Preencha o formulário corretamente.");
+            return;
+        }
+
+        // Obtem os valores dos campos do formulário
+        let campoNome = document.getElementById('inputNome').value;
+        let campoTelefone = document.getElementById('inputTelefone').value;
+        let campoCategoria = document.getElementById('inputCategoria').value;
+        let campoSite = document.getElementById('inputSite').value;
+
+        // Cria um objeto com os dados do contato
+        let contato = {
+            valor: campoNome,
+            descrição: campoTelefone,
+            categoria: campoCategoria,
+            tipo: campoSite
+        };
+
+        // Cria o contato no banco de dados
+        createContato(contato, exibeContatos);
+
+        // Limpa o formulario
+        formContato.reset()
+    });
+
+    // Trata o click do botão Alterar
+    btnUpdate = document.getElementById("btnUpdate");
+    btnUpdate.addEventListener('click', function () {
+        // Obtem os valores dos campos do formulário
+        let campoId = document.getElementById("inputId").value;
+        if (campoId == "") {
+            displayMessage("Selecione antes uma operação para ser alterada.");
+            return;
+        }
+
+        // Obtem os valores dos campos do formulário
+        let campoNome = document.getElementById('inputNome').value;
+        let campoTelefone = document.getElementById('inputTelefone').value;
+        let campoCategoria = document.getElementById('inputCategoria').value;
+        let campoSite = document.getElementById('inputSite').value;
+
+        // Cria um objeto com os dados do contato
+        let contato = {
+            valor: campoNome,
+            descrição: campoTelefone,
+            categoria: campoCategoria,
+            tipo: campoSite
+        };
+
+        // Altera o contato no banco de dados
+        updateContato(parseInt(campoId), contato, exibeContatos);
+
+        // Limpa o formulario
+        formContato.reset()
+    });
+
+    // Trata o click do botão Excluir
+    btnDelete = document.getElementById('btnDelete');
+    btnDelete.addEventListener('click', function () {
+        let campoId = document.getElementById('inputId').value;
+        if (campoId == "") {
+            displayMessage("Selecione uma operação a ser excluída.");
+            return;
+        }
+
+        // Exclui o contato no banco de dados
+        deleteContato(parseInt(campoId), exibeContatos);
+
+        // Limpa o formulario
+        formContato.reset()
+    });
+
+    // Trata o click do botão Listar Contatos
+    btnClear = document.getElementById('btnClear');
+    btnClear.addEventListener('click', function () {
+        formContato.reset()
+    });
+
+    // Oculta a mensagem de aviso após alguns 5 segundos
+    msg = document.getElementById('msg');
+    msg.addEventListener("DOMSubtreeModified", function (e) {
+        if (e.target.innerHTML == "") return;
+        setTimeout(function () {
+            alert = msg.getElementsByClassName("alert");
+            alert[0].remove();
+        }, 5000);
+    })
+
+    // Preenche o formulário quando o usuario clicar em uma linha da tabela 
+    gridContatos = document.getElementById("grid-contatos");
+    gridContatos.addEventListener('click', function (e) {
+        if (e.target.tagName == "TD") {
+
+            // Obtem as colunas da linha selecionada na tabela
+            let linhaContato = e.target.parentNode;
+            colunas = linhaContato.querySelectorAll("td");
+
+            // Preenche os campos do formulário com os dados da linha selecionada na tabela
+            document.getElementById('inputId').value = colunas[0].innerText;
+            document.getElementById('inputNome').value = colunas[1].innerText;
+            document.getElementById('inputTelefone').value = colunas[2].innerText;
+            document.getElementById('inputCategoria').value = colunas[3].innerText;
+            document.getElementById('inputSite').value = colunas[4].innerText;
+
+        }
+    });
+
+    exibeContatos();
+    document.getElementById('btnSort').addEventListener('click', sortOperationsByValue);
+document.getElementById('btnFilter').addEventListener('click', filterOperationsByCategory);
+document.getElementById('btnShowAll').addEventListener('click', showAllOperations);
+
+}
+

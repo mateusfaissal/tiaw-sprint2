@@ -39,3 +39,10 @@ h2 {
 .form {
     margin-top: -40px;
 }
+
+.fai {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
